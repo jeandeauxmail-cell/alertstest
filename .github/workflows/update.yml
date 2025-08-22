@@ -27,7 +27,7 @@ jobs:
 
       - name: Commit and push changes
         env:
-          GITHUB_TOKEN: ${{ secrets.wesley }}  # Use the token from secrets
+          GITHUB_TOKEN: ${{ secrets.PAT_WESLEY }}  # Use the token from secrets
         run: |
           git config --local user.email "jeandeauxmail@gmail.com"
           git config --local user.name "jeandeauxmail-cell"
