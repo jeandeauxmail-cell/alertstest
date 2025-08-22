@@ -3,7 +3,7 @@ name: Update KML
 on:
   schedule:
     - cron: '*/15 * * * *'  # Every 15 minutes
-  workflow_dispatch:  # manual trigger
+  workflow_dispatch:
 
 jobs:
   build:
@@ -26,9 +26,11 @@ jobs:
         run: python alert.py  # Replace with your script name
 
       - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_WESLEY }}  # Use the token from secrets
         run: |
           git config --local user.email "jeandeauxmail@gmail.com"
-          git config --local user.name "jeandeauxmail-cell"
+          git config --local user.name "jean deaux"
           git add alerts.kml
           git commit -m "Update KML file"
-          git push
+          git push https://$GITHUB_TOKEN@github.com/jeandeauxmail-cell/alertstest.git HEAD:main
