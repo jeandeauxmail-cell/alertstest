@@ -30,7 +30,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_WESLEY }}  # Use the token from secrets
         run: |
           git config --local user.email "jeandeauxmail@gmail.com"
-          git config --local user.name "jean deaux"
+          git config --local user.name "jeandeauxmail-cell"
           git add alerts.kml
           git commit -m "Update KML file"
           git push https://$GITHUB_TOKEN@github.com/jeandeauxmail-cell/alertstest.git HEAD:main
