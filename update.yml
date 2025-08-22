@@ -3,7 +3,7 @@ name: Update KML
 on:
   schedule:
     - cron: '*/15 * * * *'  # Every 15 minutes
-  workflow_dispatch:
+  workflow_dispatch:  # manual trigger
 
 jobs:
   build:
