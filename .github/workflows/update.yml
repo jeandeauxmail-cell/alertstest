@@ -23,7 +23,7 @@ jobs:
           pip install requests
 
       - name: Run script
-        run: python your_script.py  # Replace with your script name
+        run: python alert.py  # Replace with your script name
 
       - name: Commit and push changes
         run: |
