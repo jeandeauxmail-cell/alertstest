@@ -35,7 +35,7 @@ def http_get(url: str, timeout=30) -> bytes:
     req = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "CAP-KML/1.0 (+https://github.com/your/repo)",
+            "User-Agent": "CAP-KML/1.0 (+https://github.com/jeandeauxmail-cell/alertstest)",
             "Accept": "application/atom+xml,application/xml,text/xml",
         },
     )
