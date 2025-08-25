@@ -135,6 +135,7 @@ def parse_point_from_entry(entry: ET.Element):
             return (float(lat_str), float(lon_str))
         except Exception:
             pass
+
     # Else try georss:polygon centroid
     poly = entry.find("georss:polygon", NS)
     if poly is not None and poly.text:
@@ -144,7 +145,16 @@ def parse_point_from_entry(entry: ET.Element):
             return polygon_centroid(coords)
         except Exception:
             pass
+
+    # Fallback: areaDesc lookup
+    area_desc = text_of(entry, "cap:areaDesc")
+    if area_desc:
+        for state, centroid in STATE_CENTROIDS.items():
+            if state in area_desc:
+                return centroid
+
     return None
+
 def text_of(el: ET.Element, path: str) -> str:
     node = el.find(path, NS)
     return node.text.strip() if node is not None and node.text else ""
