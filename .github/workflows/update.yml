@@ -53,5 +53,5 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Update alerts.kml $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-            git push origin gh-pages
+            git push origin gh-pages --force
           fi
