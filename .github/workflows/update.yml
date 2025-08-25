@@ -1,36 +1,57 @@
-name: Update KML
+name: Build & Publish CAP → KML
+
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'  # Every 15 minutes
   workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *" # every 5 minutes
+
+
+permissions:
+  contents: write
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
 
       - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
 
-      - name: Run script
-        run: python alert.py  # Replace with your script name
+    - name: Install deps
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Commit and push changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.wesley }}  # Use the token from secrets
-        run: |
-          git config --local user.email "jeandeauxmail@gmail.com"
-          git config --local user.name "jeandeauxmail-cell"
-          git add alerts.kml
-          git commit -m "Update KML file"
-          git push https://$GITHUB_TOKEN@github.com/jeandeauxmail-cell/alertstest.git HEAD:main
+
+    - name: Generate KML
+    run: |
+      mkdir -p site
+      python src/generate_kml.py site/alerts.kml
+
+
+    - name: Deploy to gh-pages
+    run: |
+      git config user.name "github-actions[bot]"
+      git config user.email "github-actions[bot]@users.noreply.github.com"
+      git fetch origin gh-pages || true
+      git checkout -B gh-pages origin/gh-pages || git checkout -B gh-pages
+      mkdir -p .
+      cp -r site/* .
+      touch .nojekyll
+      git add -A
+      if git diff --cached --quiet; then
+        echo "No changes to commit"
+      else
+        git commit -m "Update alerts.kml $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+        git push origin gh-pages
+      fi
