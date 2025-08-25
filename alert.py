@@ -169,28 +169,6 @@ def build_kml(entries):
         
         
     return ET.ElementTree(kml)
-def add_data(name, value):
-d = ET.SubElement(ext, "Data", name=name)
-ET.SubElement(d, "value").text = value or ""
-
-
-add_data("ext_event", e.get("event"))
-add_data("ext_severity", e.get("severity"))
-add_data("ext_urgency", e.get("urgency"))
-add_data("ext_certainty", e.get("certainty"))
-add_data("ext_effective", e.get("effective"))
-add_data("ext_expires", e.get("expires"))
-add_data("ext_areaDesc", e.get("areaDesc"))
-add_data("ext_description", e.get("description"))
-add_data("ext_instruction", e.get("instruction"))
-add_data("ext_id", e.get("id"))
-
-
-pt_el = ET.SubElement(pm, "Point")
-ET.SubElement(pt_el, "coordinates").text = f"{pt[1]},{pt[0]},0"
-
-
-return ET.ElementTree(kml)
 
 def main(out_path: str):
     raw = http_get(FEED_URL)
@@ -203,79 +181,33 @@ def main(out_path: str):
         point = parse_point_from_entry(entry)
         if not point:
             continue # skip if we can't place it
-    data = {
-        "point": point,
-        "id": text_of(entry, "atom:id"),
-        "title": text_of(entry, "atom:title"),
-        "updated": text_of(entry, "atom:updated"),
-        "summary": text_of(entry, "atom:summary"),
-        # CAP fields
-        "event": text_of(entry, "cap:event"),
-        "effective": text_of(entry, "cap:effective"),
-        "expires": text_of(entry, "cap:expires"),
-        "urgency": text_of(entry, "cap:urgency"),
-        "severity": text_of(entry, "cap:severity"),
-        "certainty": text_of(entry, "cap:certainty"),
-        "areaDesc": text_of(entry, "cap:areaDesc"),
-        "headline": text_of(entry, "cap:headline"),
-        "description": text_of(entry, "cap:description"),
-        "instruction": text_of(entry, "cap:instruction"),
-    }
-    entries.append(data)
+        data = {
+            "point": point,
+            "id": text_of(entry, "atom:id"),
+            "title": text_of(entry, "atom:title"),
+            "updated": text_of(entry, "atom:updated"),
+            "summary": text_of(entry, "atom:summary"),
+            # CAP fields
+            "event": text_of(entry, "cap:event"),
+            "effective": text_of(entry, "cap:effective"),
+            "expires": text_of(entry, "cap:expires"),
+            "urgency": text_of(entry, "cap:urgency"),
+            "severity": text_of(entry, "cap:severity"),
+            "certainty": text_of(entry, "cap:certainty"),
+            "areaDesc": text_of(entry, "cap:areaDesc"),
+            "headline": text_of(entry, "cap:headline"),
+            "description": text_of(entry, "cap:description"),
+            "instruction": text_of(entry, "cap:instruction"),
+        }
+        entries.append(data)
+        
+    kml_tree = build_kml(entries)
 
-
-kml_tree = build_kml(entries)
-
-
-# Pretty-print
-ET.indent(kml_tree, space=" ", level=0)
-kml_tree.write(out_path, encoding="utf-8", xml_declaration=True)
-print(f"Wrote {out_path} with {len(entries)} placemarks", file=sys.stderr)
-
-
-def main(out_path: str):
-raw = http_get(FEED_URL)
-root = ET.fromstring(raw)
-entries_xml = root.findall("atom:entry", NS)
-
-
-entries = []
-for entry in entries_xml:
-point = parse_point_from_entry(entry)
-if not point:
-continue # skip if we can't place it
-data = {
-"point": point,
-"id": text_of(entry, "atom:id"),
-"title": text_of(entry, "atom:title"),
-"updated": text_of(entry, "atom:updated"),
-"summary": text_of(entry, "atom:summary"),
-# CAP fields
-"event": text_of(entry, "cap:event"),
-"effective": text_of(entry, "cap:effective"),
-"expires": text_of(entry, "cap:expires"),
-"urgency": text_of(entry, "cap:urgency"),
-"severity": text_of(entry, "cap:severity"),
-"certainty": text_of(entry, "cap:certainty"),
-"areaDesc": text_of(entry, "cap:areaDesc"),
-"headline": text_of(entry, "cap:headline"),
-"description": text_of(entry, "cap:description"),
-"instruction": text_of(entry, "cap:instruction"),
-}
-entries.append(data)
-
-
-kml_tree = build_kml(entries)
-
-
-# Pretty-print
-ET.indent(kml_tree, space=" ", level=0)
-kml_tree.write(out_path, encoding="utf-8", xml_declaration=True)
-print(f"Wrote {out_path} with {len(entries)} placemarks", file=sys.stderr)
-
-
-
+    # Pretty-print
+    ET.indent(kml_tree, space=" ", level=0)
+    kml_tree.write(out_path, encoding="utf-8", xml_declaration=True)
+    print(f"Wrote {out_path} with {len(entries)} placemarks", file=sys.stderr)
 
 if __name__ == "__main__":
-out = sys.argv[1] if len(sys.argv) > 1 else "site/alerts.kml"
-main(out)
+    out = sys.argv[1] if len(sys.argv) > 1 else "site/alerts.kml"
+    main(out)
