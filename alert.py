@@ -101,6 +101,7 @@ def polygon_centroid(latlons):
     """Return centroid (lat, lon) of a polygon given list of (lat, lon). Uses planar approx.
     If area ~ 0, falls back to mean of vertices.
     """
+"""
     if not latlons:
         return None
     # Convert to (x=lon, y=lat)
@@ -145,7 +146,7 @@ def parse_point_from_entry(entry: ET.Element):
             return polygon_centroid(coords)
         except Exception:
             pass
-
+"""
     # Fallback: areaDesc lookup
     area_desc = text_of(entry, "cap:areaDesc")
     if area_desc:
