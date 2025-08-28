@@ -101,7 +101,7 @@ def polygon_centroid(latlons):
     """Return centroid (lat, lon) of a polygon given list of (lat, lon). Uses planar approx.
     If area ~ 0, falls back to mean of vertices.
     """
-    """
+
     if not latlons:
         return None
     # Convert to (x=lon, y=lat)
@@ -129,6 +129,7 @@ def polygon_centroid(latlons):
 
 def parse_point_from_entry(entry: ET.Element):
     # Prefer georss:point
+    """
     p = entry.find("georss:point", NS)
     if p is not None and p.text:
         try:
